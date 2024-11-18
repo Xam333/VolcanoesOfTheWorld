@@ -1,0 +1,52 @@
+.account-container {
+    margin: auto;
+    padding: 30px;
+    padding-top: 150px;
+    position: relative;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+.input-container {
+    margin: auto;
+    display: flex;
+    padding-top: 30px;
+    align-items: center;
+    justify-content: space-around;
+    flex-direction: column;
+}
+
+p {
+    padding-bottom: 10px;
+}
+
+.input-container input {
+    border: none;
+    padding: 10px;
+    width: 350px;
+    height: 50px;
+    border-radius: 4px;
+}
+
+.input-container input:focus {
+    border: solid 1px #509bde;
+}
+
+.account-container button {
+    margin-top: 30px;
+    padding: 8px 16px;
+    background-color: #509bde;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1rem;
+    box-shadow: 0 0 8px #ddd;
+    height: 2.5rem;
+}
+
+.account-container button:hover {
+    background-color: #0e86e8;
+}

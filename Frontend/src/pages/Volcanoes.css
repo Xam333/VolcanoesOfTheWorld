@@ -1,0 +1,25 @@
+.table-container {
+    padding-top: 20px;
+    z-index: 900;
+    width: 50%;
+    margin: auto;
+    min-width: 300px;
+}
+
+.searchbar-container {
+    padding-top: 150px;
+    margin: auto;
+    min-width: 300px;
+    display: flex;
+    width: 50%;
+    position: relative;
+    z-index: 3;
+    flex-direction: row;
+}
+
+/* Adjust narrow screen layout */
+@media (max-width: 960px) {
+    .searchbar-container {
+        flex-direction: column;
+    }
+}

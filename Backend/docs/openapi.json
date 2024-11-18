@@ -1,0 +1,1452 @@
+{
+    "openapi": "3.0.2",
+    "info": {
+        "title": "Volcanoes Around the World! v2.0",
+        "description": "This Swagger API document exposes a number of REST endpoints which implement CRUD operations on a database containing publicly available data about volcanoes collated by the Smithsonian Institution's Global Volcanism Program. The API endpoints and their usage are described in detail below.",
+        "contact": {
+            "email": "n11078472@qut.edu.au"
+        }
+    },
+    "tags": [
+        {
+            "name": "Data",
+            "description": "Retrieve API data about volcanoes from around the world."
+        },
+        {
+            "name": "Authentication",
+            "description": "Login or register to access added features."
+        },
+        {
+            "name": "Profile",
+            "description": "Retrieve or update profile information."
+        },
+        {
+            "name": "Reviews",
+            "description": "Add or retrieve reviews on volcanoes from around the world."
+        },
+        {
+            "name": "Administration",
+            "description": "Retrieve information about the devlopment team."
+        }
+    ],
+    "components": {
+        "securitySchemes": {
+            "BearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT",
+                "description": "Enter JWT Bearer token only:"
+            }
+        }        
+    },
+    "security": [
+        {
+            "BearerAuth": []
+        }
+    ],
+    "paths": {
+        "/countries": {
+            "get": {
+                "tags": [
+                    "Data"
+                ],
+                "summary": "Retrieve country data",
+                "description": "Returns a list of all countries that are associated with one or more volcanoes, ordered alphabetically.",
+                "security": [],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "An array of countries. An example of the first five elements in the array is shown below.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    },
+                                    "example": [
+                                        "Algeria",
+                                        "Antarctica",
+                                        "Argentina",
+                                        "Armenia",
+                                        "Australia"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid query parameters",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Query parameters not permitted."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server / database error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error in MySQL query"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/volcanoes": {
+            "get": {
+                "tags": [
+                    "Data"
+                ],
+                "summary": "Retrieve volcano data from a specific country",
+                "description": "Returns a list of volcano objects, each with an id, name, country, region, and subregion. The country query parameter is required. Optionally, the list can be filtered using the populatedWithin query parameter, to reduce the list to volcanoes with at least one person living within the provided radius.",
+                "security": [],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "country",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Name of the country to filter volcanoes."
+                    },
+                    {
+                        "name": "populatedWithin",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "5km",
+                                "10km",
+                                "30km",
+                                "100km"
+                            ]
+                        },
+                        "description": "Optional parameter to filter volcanoes based on population proximity."
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "An array of volcano objects, each containing an id, name, country, region, and subregion. An example array is shown below.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "name": {
+                                                "type": "string",
+                                                "example": "Abu"
+                                            },
+                                            "country": {
+                                                "type": "string",
+                                                "example": "Japan"
+                                            },
+                                            "region": {
+                                                "type": "string",
+                                                "example": "Japan, Taiwan, Marianas"
+                                            },
+                                            "subregion": {
+                                                "type": "string",
+                                                "example": "Honshu"
+                                            }
+                                        }
+                                    }
+                                },
+                                "example": [
+                                    {
+                                        "id": 1,
+                                        "name": "Abu",
+                                        "country": "Japan",
+                                        "region": "Japan, Taiwan, Marianas",
+                                        "subregion": "Honshu"
+                                    },
+                                    {
+                                        "id": 16,
+                                        "name": "Aogashima",
+                                        "country": "Japan",
+                                        "region": "Japan, Taiwan, Marianas",
+                                        "subregion": "Izu, Volcano, and Mariana Islands"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid query parameters. Click on 'Examples' dropdown below to see possible error responses.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "examples": {
+                                    "MissingCountryParameter": {
+                                        "summary": "MissingCountryParameter",
+                                        "value": {
+                                            "error": true,
+                                            "message": "Country is a required query parameter"
+                                        }
+                                    },
+                                    "InvalidParameters": {
+                                        "summary": "InvalidParamters",
+                                        "value": {
+                                            "error": true,
+                                            "message": "Invalid query parameters. Only country and populatedWithin are permitted."
+                                        }
+                                    },
+                                    "InvalidPopulatedWithinParameter": {
+                                        "summary": "InvalidPopulatedWithinParameter",
+                                        "value": {
+                                            "error": true,
+                                            "message": "Invalid populatedWithin query parameter. Must be 5km, 10km, 30km, or 100km."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server / database error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error in MySQL query"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/volcano/{id}": {
+            "get": {
+                "tags": [
+                    "Data"
+                ],
+                "summary": "Retrieve data from a specific volcano",
+                "description": "Returns an object containing data for the queried volcano. If a valid JWT token is sent in the header of the request, population data for the volcano is also provided. To test this using Swagger, click the green 'Authorize' button at the top of this page and enter your JWT token. A JWT token can be obtained by logging in. The path parameter (id) is required and represents the id of the volcano.",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        },
+                        "description": "The ID of the volcano"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns an object containing the id, name, country, region, subregion, last eruption, summit, elevation, latitude, and longitude data for the queried volcano. If a valid JWT token is sent in the header of the request, the population data is also provided. An example of one object (with an authenticated request) is shown below.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "name": {
+                                                "type": "string",
+                                                "example": "Abu"
+                                            },
+                                            "country": {
+                                                "type": "string",
+                                                "example": "Japan"
+                                            },
+                                            "region": {
+                                                "type": "string",
+                                                "example": "Japan, Taiwan, Marianas"
+                                            },
+                                            "subregion": {
+                                                "type": "string",
+                                                "example": "Honshu"
+                                            },
+                                            "last_eruption": {
+                                                "type": "string",
+                                                "example": "6850 BCE"
+                                            },
+                                            "summit": {
+                                                "type": "integer",
+                                                "example": 641
+                                            },
+                                            "elevation": {
+                                                "type": "integer",
+                                                "example": 2103
+                                            },
+                                            "latitude": {
+                                                "type": "string",
+                                                "example": "34.5000"
+                                            },
+                                            "longitude": {
+                                                "type": "string",
+                                                "example": "131.6000"
+                                            },
+                                            "population_5km": {
+                                                "type": "integer",
+                                                "example": 3597
+                                            },
+                                            "population_10km": {
+                                                "type": "integer",
+                                                "example": 9594
+                                            },
+                                            "population_30km": {
+                                                "type": "integer",
+                                                "example": 117805
+                                            },
+                                            "population_100km": {
+                                                "type": "integer",
+                                                "example": 4071152
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server / database error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error in MySQL query"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/user/register": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Register a new user",
+                "description": "Creates a new user account. A request body containing the user's email and password must be sent.",
+                "security": [],
+                "produces": [
+                    "application/json"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "timothy.chappell@gmail.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password"
+                                    }
+                                },
+                                "required": [
+                                    "email",
+                                    "password"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "User successfully created.",
+                        "content": {
+                            "application/json": {
+                                "type": "object",
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User created"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request.",
+                        "content": {
+                            "application/json": {
+                                "type": "object",
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Request body incomplete, both email and password are required"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "User already exists.",
+                        "content": {
+                            "application/json": {
+                                "type": "object",
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User already exists"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server / database error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error in MySQL query"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/user/login": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Login to account",
+                "description": "Log in to an existing user account. A request body containing the user email and password must be sent.",
+                "security": [],
+                "produces": [
+                    "application/json"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "timothy.chappell@gmail.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password"
+                                    }
+                                },
+                                "required": [
+                                    "email",
+                                    "password"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Log in successful.",
+                        "content": {
+                            "application/json": {
+                                "type": "object",
+                                "schema": {
+                                    "properties": {
+                                        "token": {
+                                            "type": "string",
+                                            "example": "ajsonwebtoken"
+                                        },
+                                        "token_type": {
+                                            "type": "string",
+                                            "example": "Bearer"
+                                        },
+                                        "expires_in": {
+                                            "type": "integer",
+                                            "example": 86400
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid log in request.",
+                        "content": {
+                            "application/json": {
+                                "type": "object",
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Request body incomplete, both email and password are required"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Log in failed",
+                        "content": {
+                            "application/json": {
+                                "type": "object",
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Incorrect email or password"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server / database error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error in MySQL query"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/user/{email}/profile": {
+            "get": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Retrieve info about a user's profile",
+                "description": "Returns an object containing a user's profile information. The path parameter (email) is required and must be an email that has been registered. This route returns additional information if the user is authenticated. To be authenticated, a valid JWT token must be provided in the header of the request.",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "email",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Email address of a registered user."
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "An object containing email, firstName, lastName, address (authenticated only) and dob (authenticated only) properties. An example object for an authenticated request is shown below. If no profile information has been entered for the user via the profile PUT request route, all returned values except email are expected to be null. Click on examples dropdown to see an unauthenticated request.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthenticatedProfile"
+                                },
+                                "examples": {
+                                    "AuthenticatedProfile": {
+                                        "value": {
+                                            "email": "mike@gmail.com",
+                                            "firstName": "Michael",
+                                            "lastName": "Jordan",
+                                            "dob": "1963-02-17",
+                                            "address": "123 Fake Street, Springfield"
+                                        }
+                                    },
+                                    "PublicProfile": {
+                                        "value": {
+                                            "email": "mike@gmail.com",
+                                            "firstName": "Michael",
+                                            "lastName": "Jordan"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized errors. Click on examples dropdown to see possible error responses.",
+                        "content": {
+                            "application/json": {
+                                "type": "object",
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "examples": {
+                                    "TokenExpired": {
+                                        "summary": "TokenExpired",
+                                        "value": {
+                                            "error": true,
+                                            "message": "JWT token has expired"
+                                        }
+                                    },
+                                    "InvalidJWT": {
+                                        "summary": "InvalidJWT",
+                                        "value": {
+                                            "error": true,
+                                            "message": "Invalid JWT token"
+                                        }
+                                    },
+                                    "MalformedAuthHeader": {
+                                        "summary": "MalformedAuthHeader",
+                                        "value": {
+                                            "error": true,
+                                            "message": "Authorization header is malformed"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "content": {
+                            "application/json": {
+                                "type": "object",
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server / database error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Internal server error"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Update user profile information",
+                "description": "Update's a user's profile information. The path parameter (email) is required and must be an email that has been registered. A request body containning the user's profile information must be sent. This route returns an object containing the user's updated profile information. This route required the user to be authenticated, a valid JWT token must be sent in the header of the request.",
+                "parameters": [
+                    {
+                        "name": "email",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "The email of the user whose profile needs to be updated."
+                    }
+                ],
+                "requestBody": {
+                    "description": "An object containing the user's firstName, lastName, dob, and address. dob must be a valid date string in the past matching the format YYYY-MM-DD. All key/value pairs are required.",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "firstName": {
+                                        "type": "string",
+                                        "format": "firstName",
+                                        "example": "Timothy"
+                                    },
+                                    "lastName": {
+                                        "type": "string",
+                                        "format": "lastName",
+                                        "example": "Chappell"
+                                    },
+                                    "dob": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "1963-02-17"
+                                    },
+                                    "address": {
+                                        "type": "string",
+                                        "format": "address",
+                                        "example": "123 Fake Street, Springfield"
+                                    }
+                                },
+                                "required": [
+                                    "email",
+                                    "password",
+                                    "dob",
+                                    "address"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Profile updated successfully. Returns an object containing the new user data, including email, firstName, lastName, dob, and address properties.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "email": {
+                                            "type": "string",
+                                            "example": "timothy.chappell@gmail.com"
+                                        },
+                                        "firstName": {
+                                            "type": "string",
+                                            "example": "Timothy"
+                                        },
+                                        "lastName": {
+                                            "type": "string",
+                                            "example": "Chappell"
+                                        },
+                                        "dob": {
+                                            "type": "string",
+                                            "format": "date",
+                                            "example": "1963-02-17"
+                                        },
+                                        "address": {
+                                            "type": "string",
+                                            "example": "123 Fake Street, Springfield"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request - Invalid input data or missing fields. Click the examples dropdown to see the possible error responses.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "examples": {
+                                    "InvalidProfileBodyFormat": {
+                                        "summary": "InvalidProfileBodyFormat",
+                                        "value": {
+                                            "error": true,
+                                            "message": "Request body incomplete: firstName, lastName, dob and address are all required."
+                                        }
+                                    },
+                                    "InvalidFirstNameLastNameAddressFormat": {
+                                        "summary": "InvalidFirstNameLastNameAddressFormat",
+                                        "value": {
+                                            "error": true,
+                                            "message": "Request body invalid: firstName, lastName and address must be strings only."
+                                        }
+                                    },
+                                    "InvalidProfileDateFormat": {
+                                        "summary": "InvalidProfileDateFormat",
+                                        "value": {
+                                            "error": true,
+                                            "message": "Invalid input: dob must be a real date in format YYYY-MM-DD."
+                                        }
+                                    },
+                                    "InvalidProfileDate": {
+                                        "summary": "InvalidProfileDate",
+                                        "value": {
+                                            "error": true,
+                                            "message": "Invalid input: dob must be a date in the past."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized errors. Click on examples dropdown to see possible error responses.",
+                        "content": {
+                            "application/json": {
+                                "type": "object",
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "examples": {
+                                    "MissingAuthHeader": {
+                                        "summary": "MissingAuthHeader",
+                                        "value": {
+                                            "error": true,
+                                            "message": "Authorization header not found. Must be logged in to access account data"
+                                        }
+                                    },
+                                    "TokenExpired": {
+                                        "summary": "TokenExpired",
+                                        "value": {
+                                            "error": true,
+                                            "message": "JWT token has expired"
+                                        }
+                                    },
+                                    "InvalidJWT": {
+                                        "summary": "InvalidJWT",
+                                        "value": {
+                                            "error": true,
+                                            "message": "Invalid JWT token"
+                                        }
+                                    },
+                                    "MalformedAuthHeader": {
+                                        "summary": "MalformedAuthHeader",
+                                        "value": {
+                                            "error": true,
+                                            "message": "Authorization header is malformed"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden. Email address associated with JWT token is not the same as email provided in path parameter.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Forbidden: Cannot edit someone else's account information"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found - User does not exist",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User does not exist"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server / database error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Internal server error"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/review/{id}": {
+            "post": {
+                "tags": [
+                    "Reviews"
+                ],
+                "summary": "Post a review of a volcano.",
+                "description": "Post a rating and a comment about a volcano, that other's will be able to view. A rating is required, a comment is optional.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        },
+                        "description": "The ID of the volcano to be reviewed"
+                    }
+                ],
+                "requestBody": {
+                    "description": "An object containing the rating out of 5 (1, 2, 3, 4, or 5), and optionally a comment.",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "rating": {
+                                        "type": "integer",
+                                        "example": 4
+                                    },
+                                    "comment": {
+                                        "type": "string",
+                                        "example": "Had a great time visiting!"
+                                    }
+                                },
+                                "required": [
+                                    "rating"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Review successfully posted and added to the system. An object with a success message is returned.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Review successfully added"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request - Invalid input data or missing fields. Click the examples dropdown to see the possible error responses.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "examples": {
+                                    "MissingRating": {
+                                        "summary": "MissingRating",
+                                        "value": {
+                                            "error": true,
+                                            "message": "Request body incomplete: a rating is required"
+                                        }
+                                    },
+                                    "InvalidRatingType": {
+                                        "summary": "InvalidRatingType",
+                                        "value": {
+                                            "error": true,
+                                            "message": "Invalid rating: must be 1, 2, 3, 4, or 5"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized errors. Click on examples dropdown to see possible error responses.",
+                        "content": {
+                            "application/json": {
+                                "type": "object",
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "examples": {
+                                    "MissingAuthHeader": {
+                                        "summary": "MissingAuthHeader",
+                                        "value": {
+                                            "error": true,
+                                            "message": "Authorization header not found. Must be logged in to post a review"
+                                        }
+                                    },
+                                    "TokenExpired": {
+                                        "summary": "TokenExpired",
+                                        "value": {
+                                            "error": true,
+                                            "message": "JWT token has expired"
+                                        }
+                                    },
+                                    "InvalidJWT": {
+                                        "summary": "InvalidJWT",
+                                        "value": {
+                                            "error": true,
+                                            "message": "Invalid JWT token"
+                                        }
+                                    },
+                                    "MalformedAuthHeader": {
+                                        "summary": "MalformedAuthHeader",
+                                        "value": {
+                                            "error": true,
+                                            "message": "Authorization header is malformed"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found - User does not exist",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server / database error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Internal server error"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            },
+            "get": {
+                "tags": [
+                    "Reviews"
+                ],
+                "summary": "Get all reviews of a specific volcano.",
+                "description": "Returns a list of review objects for the specified volcano. Each review includes a star rating out of 5, a comment, and the first and last name of the user that posted the review.",
+                "security": [],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        },
+                        "description": "The ID of the volcano to be reviewed"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns a list of review objects associated to the speicifed volcano. Each object contains a rating (1 to 5), a comment, and the firstName and lastName of the user who posted the review. An example is shown below.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "rating": {
+                                                "type": "integer",
+                                                "description": "Rating of the review (1 to 5)"
+                                            },
+                                            "comment": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ],
+                                                "description": "Comment provided by the user (can be null)"
+                                            },
+                                            "firstName": {
+                                                "type": "string",
+                                                "description": "First name of the user who posted the review"
+                                            },
+                                            "lastName": {
+                                                "type": "string",
+                                                "description": "Last name of the user who posted the review"
+                                            }
+                                        },
+                                        "example": [
+                                            {
+                                                "rating": 1,
+                                                "comment": "It erupted while I was taking a selfie. Only just made it out alive.",
+                                                "firstName": "Sam",
+                                                "lastName": "van Zuylen"
+                                            },
+                                            {
+                                                "rating": 5,
+                                                "comment": "Loved it!",
+                                                "firstName": "Michael",
+                                                "lastName": "Jordan"
+                                            },
+                                            {
+                                                "rating": 4,
+                                                "comment": "Was pretty great",
+                                                "firstName": "Timothy",
+                                                "lastName": "Chappell"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found - no reviews found for the specified volcano.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No reviews found for this volcano"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server / database error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Internal server error"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/review/ratings/{id}": {
+            "get": {
+                "tags": [
+                    "Reviews"
+                ],
+                "summary": "Get the average rating of a volcano",
+                "description": "Returns the average rating of a specified volcano based on it's reviews left by other users.",
+                "security": [],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        },
+                        "description": "The ID of the volcano to be reviewed"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Average rating successfully retrieved",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "averageRating": {
+                                            "type": "number",
+                                            "format": "float",
+                                            "description": "Average rating for the specified volcano"
+                                        }
+                                    },
+                                    "example": {
+                                        "averageRating": 4.75
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No reviews found for the specified volcano",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No reviews found for this volcano"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Internal server error"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/me": {
+            "get": {
+                "tags": [
+                    "Administration"
+                ],
+                "summary": "Retrieve information about the developer (me).",
+                "description": "Returns the name and student number of the best CAB230 student.",
+                "security": [],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "An object containing my name and student number.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "name": {
+                                            "type": "string",
+                                            "example": "Samuel van Zuylen"
+                                        },
+                                        "student_number": {
+                                            "type": "string",
+                                            "example": "n11078472"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

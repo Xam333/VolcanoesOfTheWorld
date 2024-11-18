@@ -1,0 +1,27 @@
+.info-container {
+    padding-top: 150px;
+    text-align: center;
+}
+
+.info-container p {
+    padding-top: 20px;
+}
+
+.map-container {
+    margin: auto;
+    padding-top: 30px;
+    width: 60%;
+    min-width: 450px;
+}
+
+.pop-container {
+    margin: auto;
+    padding-top: 50px;
+    text-align: center;
+    width: 60%;
+    min-width: 450px;
+}
+
+.pop-container p {
+    padding-top: 20px;
+}
